@@ -1,0 +1,200 @@
+Microsoft Windows [Version 10.0.19043.1348]
+(c) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+
+C:\Users\Данил>mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 13
+Server version: 8.0.26 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> USE `airbnb`;
+Database changed
+mysql> WITH `average_price`(`average_price`) AS (SELECT AVG(`price_per_day`) FROM `housing`)SELECT `title`, `location_country`, `address`, `description`, `price_per_day`, `average_price`, `price_per_day` - `average_price`AS `price_sd`, `guests_max_quantity`, `housing_rules`  FROM `housing` INNER JOIN `orders` ON `housing`.id = `orders`.housing_id, `average_price` WHERE `price_per_day` > `average_price` AND `status` = "Оплачен полностью"  ORDER BY `price_per_day` DESC \G;
+*************************** 1. row ***************************
+              title: Роскошное жилье
+   location_country: Russia
+            address: ул. 2-я Вольная
+        description: Каждый дюйм этого здания привлекателен,
+ от акцентов из камня медного цвета до сланцево-серой плитки и декора из натурального дерева.
+      price_per_day: 354.00
+      average_price: 158.100000
+           price_sd: 195.900000
+guests_max_quantity: 10
+      housing_rules: Pets allowed
+*************************** 2. row ***************************
+              title: Acropolis view penthouse w/ private plunge pool
+   location_country: USA
+            address: New-York Pool Park
+        description: Flooded with natural light
+ and featuring 2 balconies
+      price_per_day: 238.00
+      average_price: 158.100000
+           price_sd: 79.900000
+guests_max_quantity: 6
+      housing_rules: No smoking
+2 rows in set (0.00 sec)
+
+mysql> SELECT (SELECT CONCAT(`lastname`," ", `firstname`) FROM `users` WHERE `users`.id = `housing`.user_id) AS `renter`, `housing`.title AS `title`,`housing_types`.title AS `housing_type`, CONCAT(`location_country`, ", ", `location_city`, ", ", `address`) AS `full_address`, (SELECT CONCAT(`lastname`," ", `firstname`) FROM `users` WHERE `users`.id = `orders`.user_id) AS `client`, `guests_quantity`, `day_quantity`, `price_per_day`, `total_price_without_bonus`, IF(`bonus_amount` IS NULL, 0, `bonus_amount`) AS `bonus_amount`, `total_price`,`orders`.status AS `status`, `paid_amount` FROM `orders` INNER JOIN `housing` ON `orders`.housing_id = `housing`.id INNER JOIN `housing_types` ON `housing`.housing_type_id = `housing_types`.id LEFT JOIN `bonuses` ON `orders`.id = `bonuses`.order_id \G;
+*************************** 1. row ***************************
+                   renter: Reilly Ferdinand
+                    title: Vivi un sogno nella camera Deluxe
+             housing_type: Замки
+             full_address: Spain, Barcelona, c.Velazquez, 155
+                   client: Reilly Duncan
+          guests_quantity: 2
+             day_quantity: 4
+            price_per_day: 172.00
+total_price_without_bonus: 688.00
+             bonus_amount: 0.00
+              total_price: 688.00
+                   status: Отменён
+              paid_amount: 0.000
+*************************** 2. row ***************************
+                   renter: Freeman Amir
+                    title: Роскошное жилье
+             housing_type: Luxe
+             full_address: Russia, Kazan, ул. 2-я Вольная
+                   client: Garner Noah
+          guests_quantity: 10
+             day_quantity: 7
+            price_per_day: 354.00
+total_price_without_bonus: 2478.00
+             bonus_amount: 82.45
+              total_price: 2395.55
+                   status: Оплачен полностью
+              paid_amount: 2395.550
+*************************** 3. row ***************************
+                   renter: Ryan Hadassah
+                    title: Rotative micro cabin
+             housing_type: Автономное жильё
+             full_address: Poland, Warsaw, pl. Bankowy 3/5 00-950
+                   client: Walsh Hasad
+          guests_quantity: 1
+             day_quantity: 2
+            price_per_day: 40.00
+total_price_without_bonus: 80.00
+             bonus_amount: 3.00
+              total_price: 77.00
+                   status: Оплачен полностью
+              paid_amount: 77.000
+*************************** 4. row ***************************
+                   renter: Reilly Duncan
+                    title: The Arctic Hideaway - Lower tall pod -1 single bed
+             housing_type: Острова
+             full_address: Denmark, Randers, The Arctic Hideaway
+                   client: Vega Patricia
+          guests_quantity: 1
+             day_quantity: 5
+            price_per_day: 126.00
+total_price_without_bonus: 630.00
+             bonus_amount: 0.00
+              total_price: 630.00
+                   status: Забронирован
+              paid_amount: 0.000
+*************************** 5. row ***************************
+                   renter: Garner Noah
+                    title: ???
+             housing_type: Купольные дома
+             full_address: China, Shanghai, Yunnan
+                   client: Reilly Ferdinand
+          guests_quantity: 1
+             day_quantity: 2
+            price_per_day: 122.00
+total_price_without_bonus: 244.00
+             bonus_amount: 15.70
+              total_price: 244.00
+                   status: Оплачен частично
+              paid_amount: 122.000
+*************************** 6. row ***************************
+                   renter: Walsh Hasad
+                    title: Sleeping in a suitcase - a unique work of art
+             housing_type: Нестандартные варианты
+             full_address: USA, Washington, Washington park
+                   client: Pratt Melanie
+          guests_quantity: 2
+             day_quantity: 4
+            price_per_day: 86.00
+total_price_without_bonus: 344.00
+             bonus_amount: 0.00
+              total_price: 344.00
+                   status: Оплачен полностью
+              paid_amount: 344.000
+*************************** 7. row ***************************
+                   renter: Vega Patricia
+                    title: Cabane Drommen - L'Arbre ? Cabane
+             housing_type: Дома на деревьях
+             full_address: China, Shanghai, Grand Est
+                   client: Gross Sylvia
+          guests_quantity: 2
+             day_quantity: 6
+            price_per_day: 88.00
+total_price_without_bonus: 528.00
+             bonus_amount: 0.00
+              total_price: 528.00
+                   status: Отменён
+              paid_amount: 0.000
+*************************** 8. row ***************************
+                   renter: Pratt Melanie
+                    title: Acropolis view penthouse w/ private plunge pool
+             housing_type: Превосходные бассейны
+             full_address: USA, New-York, New-York Pool Park
+                   client: Moran Hilda
+          guests_quantity: 5
+             day_quantity: 7
+            price_per_day: 238.00
+total_price_without_bonus: 1666.00
+             bonus_amount: 0.00
+              total_price: 1666.00
+                   status: Оплачен полностью
+              paid_amount: 1666.000
+*************************** 9. row ***************************
+                   renter: Gross Sylvia
+                    title: Family House
+             housing_type: На пляже
+             full_address: Latvia, Riga, Riga beach
+                   client: Freeman Amir
+          guests_quantity: 2
+             day_quantity: 1
+            price_per_day: 103.00
+total_price_without_bonus: 103.00
+             bonus_amount: 0.00
+              total_price: 103.00
+                   status: Оплачен частично
+              paid_amount: 51.500
+*************************** 10. row ***************************
+                   renter: Moran Hilda
+                    title: Trulli della rondine
+             housing_type: Фермы
+             full_address: Bulgaria, Sofia, Sofia outskirts
+                   client: Ryan Hadassah
+          guests_quantity: 7
+             day_quantity: 2
+            price_per_day: 252.00
+total_price_without_bonus: 504.00
+             bonus_amount: 0.00
+              total_price: 504.00
+                   status: Забронирован
+              paid_amount: 0.000
+10 rows in set (0.00 sec)
+
+mysql> SELECT DATE_FORMAT(`arrival_date`,"%M %Y") AS `month`, COUNT(*) AS `orders_quantity`, `status` FROM `orders`GROUP BY DATE_FORMAT(`arrival_date`,"%M %Y"), `status` HAVING `status` <> "Отменён";
++---------------+-----------------+-------------------+
+| month         | orders_quantity | status            |
++---------------+-----------------+-------------------+
+| November 2021 |               3 | Оплачен полностью |
+| December 2021 |               1 | Забронирован      |
+| December 2021 |               2 | Оплачен частично  |
+| December 2021 |               1 | Оплачен полностью |
+| February 2022 |               1 | Забронирован      |
++---------------+-----------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> exit;
+Bye

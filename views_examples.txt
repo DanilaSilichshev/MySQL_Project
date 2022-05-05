@@ -1,0 +1,58 @@
+Microsoft Windows [Version 10.0.19043.1348]
+(c) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+
+C:\Users\Данил>mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 16
+Server version: 8.0.26 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> USE `airbnb`;
+Database changed
+mysql> DROP VIEW IF EXISTS `profile_full_info`;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE VIEW `profile_full_info` AS SELECT ROW_NUMBER() OVER(ORDER BY  CONCAT(`lastname`," ", `firstname`)) AS `№`, CONCAT(`lastname`," ", `firstname`) AS `fio`, `nickname`, CASE   WHEN `gender` = "m" THEN "male"         WHEN `gender` = "f" THEN "female"    WHEN `gender` = "unknown" THEN "unknown"END AS `gender`, DATE_FORMAT(`birthday`,"%d %M %Y") AS `birthday`, `email`, `phone`, CONCAT(`country`,", ",`hometown`) AS `living_place`, (SELECT IF(GROUP_CONCAT(`title`) IS NOT NULL, GROUP_CONCAT(`title`), "unknown") FROM `languages` WHERE `languages`.id IN (SELECT `language_id` FROM `users_languages` WHERE `user_id` = `users`.id)) AS `languages`, CONCAT(`currency`.title," ",`abbreviation`) AS `currency` FROM `users` INNER JOIN  `profiles` ON `users`.id = `profiles`.user_id INNER JOIN `currency` ON `profiles`.currency_id = `currency`.id ORDER BY CONCAT(`lastname`," ", `firstname`);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM `profile_full_info`;
++----+------------------+-----------+--------+-------------------+---------------------------------+-------------+------------------+------------------+----------------------+
+| ?  | fio              | nickname  | gender | birthday          | email                           | phone       | living_place     | languages        | currency             |
++----+------------------+-----------+--------+-------------------+---------------------------------+-------------+------------------+------------------+----------------------+
+|  1 | Freeman Amir     | Amir      | male   | 12 March 1991     | at.pretium@google.ca            |  6724611978 | Russia, Kazan    | русский          | российский рубль RUB |
+|  2 | Garner Noah      | Noah      | male   | 05 June 1991      | mi.aliquam.gravida@aol.net      | 18222495546 | China, Shanghai  | norsk,suomi      | китайский юань CNY   |
+|  3 | Gross Sylvia     | Sylvia    | female | 24 March 1996     | mi@google.com                   | 16627973878 | Latvia, Riga     | espa?ol          | евро EUR             |
+|  4 | Moran Hilda      | Hilda     | female | 15 October 1995   | eleifend@icloud.com             | 19714753222 | Bulgaria, Sofia  | espa?ol,fran?ais | болгарский лев BGN   |
+|  5 | Pratt Melanie    | Melanie   | female | 07 November 1992  | mauris.nulla@icloud.org         | 12725387427 | USA, New-York    | unknown          | доллар США USD       |
+|  6 | Reilly Duncan    | Duncan    | male   | 14 January 1992   | arcu.vel@outlook.edu            |  5065124424 | Denmark, Randers | русский,polski   | датская крона DKK    |
+|  7 | Reilly Ferdinand | Ferdinand | male   | 21 July 1993      | vivamus.sit.amet@hotmail.net    | 15226621105 | Spain, Barcelona | suomi            | евро EUR             |
+|  8 | Ryan Hadassah    | Hadassah  | male   | 27 September 1993 | vulputate@protonmail.edu        | 13586863515 | Poland, Warsaw   | unknown          | польский злотый PLN  |
+|  9 | Vega Patricia    | Patricia  | female | 17 May 1993       | natoque.penatibus@protonmail.ca | 18439288824 | China, Shanghai  | english          | китайский юань CNY   |
+| 10 | Walsh Hasad      | Hasad     | male   | 08 February 1994  | neque.vitae.semper@hotmail.com  |  2645661412 | USA, Washington  | unknown          | доллар США USD       |
++----+------------------+-----------+--------+-------------------+---------------------------------+-------------+------------------+------------------+----------------------+
+10 rows in set (0.00 sec)
+
+mysql> DROP VIEW IF EXISTS `wish_list_info`;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE VIEW `wish_list_info` AS SELECT CONCAT(`lastname`," ", `firstname`) AS `fio`, `housing`.id AS `housing_id`, `title` AS `housing_title`, `status`, DATE_FORMAT(`created_at`,"%d %M %Y") AS `created_at`, DATE_FORMAT(`arrival_date`,"%d %M %Y") AS `arrival_date`, DATEDIFF(`arrival_date`, `created_at`) AS `days_diff` FROM `wish_lists` INNER JOIN `orders` ON `wish_lists`.user_id = `orders`.user_id AND `wish_lists`.housing_id = `orders`.housing_id INNER JOIN `users` ON `wish_lists`.user_id = `users`.id INNER JOIN `housing` ON `wish_lists`.housing_id = `housing`.id WHERE `created_at` < `arrival_date`;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SELECT * FROM `wish_list_info`;
++---------------+------------+----------------------------------------------------+--------------+------------------+------------------+-----------+
+| fio           | housing_id | housing_title                                      | status       | created_at       | arrival_date     | days_diff |
++---------------+------------+----------------------------------------------------+--------------+------------------+------------------+-----------+
+| Reilly Duncan |          1 | Vivi un sogno nella camera Deluxe                  | Отменён      | 13 November 2020 | 12 November 2021 |       364 |
+| Vega Patricia |          4 | The Arctic Hideaway - Lower tall pod -1 single bed | Забронирован | 07 August 2021   | 20 December 2021 |       135 |
++---------------+------------+----------------------------------------------------+--------------+------------------+------------------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> exit;
+Bye
